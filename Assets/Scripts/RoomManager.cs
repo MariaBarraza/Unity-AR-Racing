@@ -36,7 +36,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
     {
         if(scene.buildIndex == 1) // osea que si es el juego ya cargado
         {
-            PhotonNetwork.Instantiate(Path.Combine("photon", "NetworkedPlayer"), Vector3.zero, Quaternion.identity);
+            PhotonNetwork.Instantiate(Path.Combine("photon", "Persiano"), new Vector3(Random.Range(-0.2f, 0.5f), -3.594f, Random.Range(-1.0f, 0.0f)), Quaternion.identity);
         }
     }
 }

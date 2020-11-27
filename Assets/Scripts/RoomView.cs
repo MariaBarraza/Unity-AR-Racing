@@ -52,6 +52,7 @@ public class RoomView : MonoBehaviour
         GameObject go = (GameObject) Instantiate(srcPlayerNickNameItem, playerListContainer);
         TMP_Text playerNickNameItem = go.GetComponent<TMP_Text>();
         playerNickNameItem.text = player.NickName;
+        playerNickNameItem.fontSize = 50;
     }
 
     public void RemovePlayerInListContainer(Player player)
@@ -74,6 +75,7 @@ public class RoomView : MonoBehaviour
             GameObject go = (GameObject) Instantiate(srcPlayerNickNameItem, playerListContainer);
             TMP_Text playerNickNameItem = go.GetComponent<TMP_Text>();
             playerNickNameItem.text = p.NickName;
+            playerNickNameItem.fontSize = 50;
         }
     }
 }
