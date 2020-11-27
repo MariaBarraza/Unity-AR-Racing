@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
+using Photon.Pun;
 
 public class Persiano : MonoBehaviour
 {
@@ -10,21 +12,87 @@ public class Persiano : MonoBehaviour
     [SerializeField]
     float runSpeed;
     Animator anim;
-    [SerializeField]
+
+    GameObject right, left, up, down;
     Button sprint;
 
     Vector3 Axis = Vector3.zero;
 
     bool run = true;
+    PhotonView photonView;
+    [SerializeField]
+    Material[] materials = new Material[8];
 
     void Awake()
     {
+        right = GameObject.Find("Canvas/Right");
+        left = GameObject.Find("Canvas/Left");
+        up = GameObject.Find("Canvas/Up");
+        down = GameObject.Find("Canvas/Down");
+        sprint = GameObject.Find("Canvas/Sprint").GetComponent<Button>();
         anim = GetComponent<Animator>();
         sprint.onClick.AddListener(Sprint);
+        photonView = GetComponent<PhotonView>();
+
+        SkinnedMeshRenderer renderer = transform.GetChild(1).gameObject.GetComponent<SkinnedMeshRenderer>();
+        Material[] mats = renderer.materials;
+        if(Launcher.instance.matIndex > materials.Length - 1)
+        {
+            Launcher.instance.matIndex = 0;
+        }
+        mats[0] = materials[Launcher.instance.matIndex];
+        mats[1] = materials[Launcher.instance.matIndex++];
+        renderer.materials = mats;
+    }
+
+    void Start()
+    {
+        //right
+        EventTrigger rightTrigger = right.GetComponent<EventTrigger>();
+        EventTrigger.Entry entry = new EventTrigger.Entry();
+        entry.eventID = EventTriggerType.PointerDown;
+        entry.callback.AddListener( (eventData) => { Axis.x += 1; } );
+        rightTrigger.triggers.Add(entry);
+        entry = new EventTrigger.Entry();
+        entry.eventID = EventTriggerType.PointerUp;
+        entry.callback.AddListener( (eventData) => { Axis.x -= 1; } );
+        rightTrigger.triggers.Add(entry);
+        //left
+        EventTrigger leftTrigger = left.GetComponent<EventTrigger>();
+        entry = new EventTrigger.Entry();
+        entry.eventID = EventTriggerType.PointerDown;
+        entry.callback.AddListener( (eventData) => { Axis.x -= 1; } );
+        leftTrigger.triggers.Add(entry);
+        entry = new EventTrigger.Entry();
+        entry.eventID = EventTriggerType.PointerUp;
+        entry.callback.AddListener( (eventData) => { Axis.x += 1; } );
+        leftTrigger.triggers.Add(entry);
+        //up
+        EventTrigger upTrigger = up.GetComponent<EventTrigger>();
+        entry = new EventTrigger.Entry();
+        entry.eventID = EventTriggerType.PointerDown;
+        entry.callback.AddListener( (eventData) => { Axis.z += 1; } );
+        upTrigger.triggers.Add(entry);
+        entry = new EventTrigger.Entry();
+        entry.eventID = EventTriggerType.PointerUp;
+        entry.callback.AddListener( (eventData) => { Axis.z -= 1; } );
+        upTrigger.triggers.Add(entry);
+        //down
+        EventTrigger downTrigger = down.GetComponent<EventTrigger>();
+        entry = new EventTrigger.Entry();
+        entry.eventID = EventTriggerType.PointerDown;
+        entry.callback.AddListener( (eventData) => { Axis.z -= 1; } );
+        downTrigger.triggers.Add(entry);
+        entry = new EventTrigger.Entry();
+        entry.eventID = EventTriggerType.PointerUp;
+        entry.callback.AddListener( (eventData) => { Axis.z += 1; } );
+        downTrigger.triggers.Add(entry);
     }
 
     void Update()
     {
+        if(!photonView.IsMine) return;
+
         transform.Translate(Axis.normalized.magnitude * Vector3.forward * moveSpeed * Time.deltaTime);
 
         if(Axis != Vector3.zero)

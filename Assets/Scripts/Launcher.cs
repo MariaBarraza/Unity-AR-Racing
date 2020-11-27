@@ -26,6 +26,8 @@ public class Launcher : MonoBehaviourPunCallbacks
     [SerializeField] 
     FindRoomView findRoomViewObj;
 
+    public int matIndex = 0;
+
     void Awake()
     {
         instance = this;
